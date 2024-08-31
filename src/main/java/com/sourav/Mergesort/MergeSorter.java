@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MergeSorter implements Callable<List<Integer>> {
         private List<Integer> listToSort;
+        private ExecutorService executorService;
 
-        MergeSorter(List<Integer> listToSort) {
+        MergeSorter(List<Integer> listToSort, ExecutorService executorService) {
             this.listToSort = listToSort;
+            this.executorService = executorService;
         }
 
     @Override
@@ -33,41 +36,45 @@ public class MergeSorter implements Callable<List<Integer>> {
         // We need to sort both leftList and RightList separately in different threads
 
         // 1. task to sort left list
-        MergeSorter leftSorter = new MergeSorter(leftList);
+        MergeSorter leftSorter = new MergeSorter(leftList, executorService);
 
         // 2. task to sort right list
-        MergeSorter rightSorter = new MergeSorter(rightList);
+        MergeSorter rightSorter = new MergeSorter(rightList, executorService);
 
         // Create Executor service
-        ExecutorService executorService = Executors.newCachedThreadPool();
+        // ExecutorService executorService = Executors.newCachedThreadPool();
 
-        List<Integer>sortedLeftList = executorService.submit(leftSorter);
-        List<Integer>sortedRightList = executorService.submit(rightSorter);
+        Future<List<Integer>>sortedLeftListFuture = executorService.submit(leftSorter);
+        Future<List<Integer>>sortedRightListFuture = executorService.submit(rightSorter);
 
-        // Merge left and right soretd array.
-        List<Integer> sortedArray = new ArrayList<>();
+        // Merge left and right sorted array.
+        List<Integer> sortedList = new ArrayList<>();
 
         int i = 0;
         int j = 0;
+
+        List<Integer> sortedLeftList = sortedLeftListFuture.get();
+        List<Integer> sortedRightList = sortedRightListFuture.get();
+
         while(i< sortedLeftList.size() && j<sortedRightList.size()){
-            if(sortedLeftList.get(i) <= sortedRightList.get(i)){
-                sortedArray.add(sortedLeftList.get(i));
+            if(sortedLeftList.get(i) <= sortedRightList.get(j)){
+                sortedList.add(sortedLeftList.get(i));
                 i++;
             } else {
-                sortedArray.add(sortedRightList.get(i));
+                sortedList.add(sortedRightList.get(j));
                 j++;
             }
         }
 
         while(i< sortedLeftList.size()){
-            sortedArray.add(sortedLeftList.get(i));
+            sortedList.add(sortedLeftList.get(i));
             i++;
         }
         while(j<sortedRightList.size()){
-            sortedArray.add(sortedRightList.get(i));
+            sortedList.add(sortedRightList.get(j));
             j++;
         }
 
-        return sortedArray;
+        return sortedList;
     }
 }
