@@ -1,4 +1,4 @@
-package com.sourav.AdduerSubtractor;
+package com.sourav.AdderSubtractor;
 
 public class Adder implements Runnable{
     private Count count;

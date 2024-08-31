@@ -1,4 +1,4 @@
-package com.sourav.AdduerSubtractor;
+package com.sourav.AdderSubtractorSynchronization;
 
 public class Client {
     public static void main(String[] args) throws InterruptedException {

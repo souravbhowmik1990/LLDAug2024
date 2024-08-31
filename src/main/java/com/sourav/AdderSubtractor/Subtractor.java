@@ -1,4 +1,4 @@
-package com.sourav.AdduerSubtractor;
+package com.sourav.AdderSubtractor;
 
 public class Subtractor implements Runnable{
     private Count count;
@@ -9,7 +9,7 @@ public class Subtractor implements Runnable{
     @Override
     public void run() {
         for(int i=1;i<=1000;i++){
-            count.value=count.value-1;
+            count.value=count.value-i;
         }
     }
 }
